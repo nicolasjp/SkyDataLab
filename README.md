@@ -61,10 +61,10 @@ Le projet repose sur **Azure Synapse Analytics** pour l’ingestion, le nettoyag
 ---
 
 ## 📁 Structure du projet  
-SkyDataLab/
-├── raw_data/ # Fichiers sources (CSV, JSON)
-├── code_transformation/ # Requêtes SQL et scripts de transformation
-├── results/ # Table Gold finale, export Power BI et captures d’écran
+SkyDataLab/  
+├── raw_data/ # Fichiers sources (CSV, JSON)  
+├── code_transformation/ # Requêtes SQL et scripts de transformation  
+├── results/ # Table Gold finale, export Power BI et captures d’écran  
 └── README.md
 
 ---
