@@ -1,0 +1,68 @@
+SELECT name, collation_name
+FROM sys.databases;
+
+SELECT
+    TRIM(FLIGHT_CARRIER_CODE) AS FLIGHT_CARRIER_CODE,
+    TRIM(FLIGHT_NUMBER) AS FLIGHT_NUMBER,
+    TRIM(AIRCRAFT_TYPE) AS AIRCRAFT_TYPE
+FROM
+    OPENROWSET(
+        BULK 'REF_AIRCRAFT.csv',
+        DATA_SOURCE = 'flights_data',
+        FORMAT = 'CSV',
+        PARSER_VERSION = '2.0',
+        HEADER_ROW = TRUE,
+        FIELDTERMINATOR = ';'
+    ) 
+    WITH (
+        FLIGHT_CARRIER_CODE NVARCHAR(10),
+        FLIGHT_NUMBER NVARCHAR(10),
+        AIRCRAFT_TYPE NVARCHAR(10)
+    ) AS [result];
+
+-- Check doublons
+SELECT
+    TRIM(FLIGHT_CARRIER_CODE) AS FLIGHT_CARRIER_CODE,
+    TRIM(FLIGHT_NUMBER) AS FLIGHT_NUMBER,
+    count(*) as record
+FROM
+    OPENROWSET(
+        BULK 'REF_AIRCRAFT.csv',
+        DATA_SOURCE = 'flights_data',
+        FORMAT = 'CSV',
+        PARSER_VERSION = '2.0',
+        HEADER_ROW = TRUE,
+        FIELDTERMINATOR = ';'
+    ) 
+    WITH (
+        FLIGHT_CARRIER_CODE NVARCHAR(10),
+        FLIGHT_NUMBER NVARCHAR(10),
+        AIRCRAFT_TYPE NVARCHAR(10)
+    ) AS [result]
+GROUP BY TRIM(FLIGHT_CARRIER_CODE), TRIM(FLIGHT_NUMBER)
+ORDER BY record DESC;
+
+
+-- Création de la vue
+CREATE OR ALTER VIEW aircraft_View AS
+SELECT
+    TRIM(FLIGHT_CARRIER_CODE) AS FLIGHT_CARRIER_CODE,
+    TRIM(FLIGHT_NUMBER)       AS FLIGHT_NUMBER,
+    TRIM(AIRCRAFT_TYPE)       AS AIRCRAFT_TYPE
+FROM
+    OPENROWSET(
+        BULK 'REF_AIRCRAFT.csv',
+        DATA_SOURCE = 'flights_data',
+        FORMAT = 'CSV',
+        PARSER_VERSION = '2.0',
+        HEADER_ROW = TRUE,
+        FIELDTERMINATOR = ';'
+    )
+    WITH (
+        FLIGHT_CARRIER_CODE VARCHAR(10) COLLATE Latin1_General_100_CI_AS_SC_UTF8,
+        FLIGHT_NUMBER VARCHAR(10) COLLATE Latin1_General_100_CI_AS_SC_UTF8,
+        AIRCRAFT_TYPE VARCHAR(10) COLLATE Latin1_General_100_CI_AS_SC_UTF8
+    ) AS src;
+
+-- select top 10 *
+-- from aircraft_View
